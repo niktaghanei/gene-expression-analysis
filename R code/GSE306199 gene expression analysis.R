@@ -44,6 +44,24 @@ dds <- dds[keeps, ]
 # the actual differential gene expression analysis
 dds <- DESeq(dds)
 
+#library sizes quality control
+library_sizes <- colSums(counts(dds, normalized = TRUE), na.rm = TRUE)
+cat('library size summary:\n')
+print(summary(library_sizes))
+png('sample_QC_library_sizes.png', width = 1200, height = 800, res = 120)
+par(mar = c(12, 5, 4, 2) + 0.1)
+
+barplot(
+  library_sizes,
+  main = 'QC: normalized library sizes per sample',
+  ylab = 'total normalized counts',
+  las = 2,
+  col = 'red',
+  border = NA,
+  cex.names = 0.7
+)
+abline(h = pretty(library_sizes), col = 'gray80', lty = 'dotted')
+dev.off()
 # designing a function to automate file-saving process for significant genes (0.05 < adjusted p-value and log2FoldChange > 1) 
 save_results <- function(res, name) {
   df <- as.data.frame(res)
